@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>crud</title>
+    <script src="./dist/purify.js"></script>
+    <style>
+      .mButton, .mDButton{
+        background: none;
+        border: none;
+      }
+    </style>
+	</head>
+	<body onload="updateList()">
+    <h1>Big List of Movies</h1>
+    <p id="noMovies" style="display:none;">No movies currently listed</p>
+
+    <ul id="movieList">
+    </ul>
+
+    <input type = "button" id="addMovie" value="Add Movie"></input>
+
+    <dialog id="addMovieD">
+      <form>
+        <label>Title: </label>
+        <input type="text" id="mName"></input>
+        <br/>
+        <br/>
+        <label>Year of Release: </label>
+        <input type="number" id="mYear"></input>
+        <br/>
+        <br/>
+        <label>Rating: </label>
+        <select id="mRating">
+					<option value="G">G</option>
+					<option value="PG">PG</option>
+					<option value="PG-13">PG-13</option>
+          <option value="R">R</option>
+          <option value="NR">NR</option>
+				</select>
+        <br/>
+        <br/>
+        <label>Image: </label>
+        <input type="file" id="pic" accept="image/png, image/jpeg"></input>
+        <br/>
+        <br/>
+      </form>
+      <input type="button" id="cancelD" value="Cancel"></input>
+      <input type="button" id="saveD" value="Save"></input>
+    </dialog>
+
+    <dialog id="editMovieModal">
+      <form>
+        <label>Title: </label>
+        <input type="text" id="eMName"></input>
+        <br/>
+        <br/>
+        <label>Year of Release: </label>
+        <input type="number" id="eMYear"></input>
+        <br/>
+        <br/>
+        <label>Rating: </label>
+        <select id="eMRating">
+					<option value="G">G</option>
+					<option value="PG">PG</option>
+					<option value="PG-13">PG-13</option>
+          <option value="R">R</option>
+          <option value="NR">NR</option>
+				</select>
+        <br/>
+        <br/>
+        <label>Image: </label>
+        <input type="file" id="pic" accept="image/png, image/jpeg"></input>
+        <br/>
+        <br/>
+      </form>
+      <input type="button" id="cancelEditD" value="Cancel"></input>
+      <!-- <input type="button" id="saveEditD" value="Save"></input> -->
+    </dialog>
+
+    <dialog id="deleteModal">
+      <p>Delete movie?</p>
+      <br/>
+      <input type="button" id="cancelDelete" value="Cancel"></input>
+      <!-- <input type="button" id="okDelete" value="Ok"></input> -->
+    </dialog>
+
+
+
+
+
+
+    <script src="movies.js"></script>
+
+	</body>
+</html>
