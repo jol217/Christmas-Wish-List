@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <title>X-Mas List</title>
     </head>
-    <body>
+    <body onload="loadHomepage()">
         <h1>Welcome, User!</h1>
         <nav>
             <div>
@@ -12,9 +12,31 @@
             </div>
             <div>
                 <input type="button" value="Add Item"></input>
-                <input type="button" value="Logout"></input>
-
+                <button onclick="handleLogOut()">Log Out</button>
             </div>
         </nav>
+        <script>
+            function loadHomepage(){
+                let tok = localStorage.getItem("sessTok");
+                if(tok === 'null'){
+                    location.replace('login.html');
+                }
+            }
+
+            function handleLogOut(){
+                var xhttp = new XMLHttpRequest();
+                let token = localStorage.getItem("sessTok");
+                console.log(token);
+                xhttp.onreadystatechange = function(){
+                    if(this.readyState == 4 && this.status == 204){
+                        localStorage.setItem("sessTok", null);
+                        location.replace('login.html');
+                    }
+                };
+                xhttp.open("POST", "http://fa19server.appspot.com/api/Users/logout?access_token=" + token, true);
+                xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhttp.send();
+            }
+        </script>
     </body>
 </html>
