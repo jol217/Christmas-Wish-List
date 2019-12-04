@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Login</title>
+    </head>
+    <body>
+        <h1>Login</h1>
+        <label>Username:</label>
+        <input type="text" name="username" id="uName"></input><br>
+        <label>Password:</label>
+        <input type="password" name="password" id="uPassword"></input><br>
+        <button onclick="handleLogin()">Login</button><br>
+        <p>Don't have an account? 
+            <a href="signup.html">Sign Up</a>
+        </p> 
+
+        <script>
+            let uName = document.getElementById('uName');
+            let uPassword = document.getElementById('uPassword');
+
+            function handleLogin(){
+                let nameStr = uName.value;
+                let name = encodeURIComponent(uName.value);
+                let password = encodeURIComponent(uPassword.value);
+                let data;
+                if(!nameStr.includes('@')){
+                    data = 'username=' + name + '&password=' + password;
+                }
+                else{
+                    data = 'email=' + name + '&password=' + password;
+                }
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function(){
+                    if(this.readyState == 4 && this.status == 200){
+                        console.log(xhttp.responseText);
+                    }
+                };
+                xhttp.open("POST", "http://fa19server.appspot.com/api/Users/login", true);
+                xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhttp.send(data);
+                //location.replace('login.html');
+            }
+
+        </script>
+    </body>
+</html>
