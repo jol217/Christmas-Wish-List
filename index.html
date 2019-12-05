@@ -5,7 +5,7 @@
         <title>X-Mas List</title>
         <script src="./dist/purify.js"></script>
     </head>
-    <body onload="loadHomepage()">
+    <body onload="getWishList(loadHomepage)">
         <h1 id="welcome">Welcome, &nbsp;</h1>
         <nav>
             <div>
@@ -16,6 +16,9 @@
                 <button onclick="handleLogOut()">Log Out</button>
             </div>
         </nav>
+        <section>
+          <ul id='wList'></ul>
+        </section>
 
         <dialog id="addModal">
             <label>Item:</label>
@@ -45,7 +48,9 @@
 
         <script>
             let accessTok;
-            let userName;
+            let userName = localStorage.getItem("userName");
+            document.getElementById("welcome").innerHTML += userName + "!";
+
 
             let addModal    = document.getElementById("addModal");
             let openAdd     = document.getElementById("openAdd");
@@ -58,25 +63,67 @@
             let addPic      = document.getElementById("addPic");
             let addComment  = document.getElementById("addComment");
 
-            function loadHomepage(){
-                accessTok = localStorage.getItem("sessTok");
-                userName = localStorage.getItem("userName");
-                if(accessTok === 'null'){
-                    location.replace('login.html');
-                }
-                document.getElementById("welcome").innerHTML += userName + "!";
-                //getWishList("TrxHfT9VQXCh4IKy8MOTz1f7Oj8qbK6uYnLGAJLM02zxCf2lJcCJIWP5RNzE78QB");
+
+
+            function loadHomepage(wishList){
+
+                console.log("Loaded Homepage");
+                console.log(wishList);
+                updateList(wishList.wishItems);
+
             }
 
-            function getWishList(accessToken){
+            function makeLi(item){
+              let li = document.createElement("li");
+              li.appendChild(document.createTextNode(item.item));
+              li.appendChild(document.createElement("br"));
+              li.appendChild(document.createTextNode(item.price));
+              li.appendChild(document.createElement("br"));
+              li.appendChild(document.createTextNode(item.category));
+              li.appendChild(document.createElement("br"));
+              li.appendChild(document.createTextNode(item.image));
+              li.appendChild(document.createElement("br"));
+              li.appendChild(document.createTextNode(item.comment));
+              return li;
+            }
+
+            function updateList(wishList){
+              let ul = document.getElementById("wList");
+              ul.innerHTML="";
+
+
+              for( let i = 0; i < wishList.length; i++ ){
+                console.log("in");
+                let item = wishList[i];
+
+                let li = makeLi(item);
+
+                // Create & append edite
+
+                // Create & append delete
+
+                ul.appendChild(li);
+              }
+            }
+
+            function getWishList(callback){
+                accessTok = localStorage.getItem("sessTok");
+
+                if(accessTok === 'null'){
+                    console.log("hit");
+                    location.replace('login.html');
+                }
+
+                let wishList;
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function(){
                     if(this.readyState == 4){
-                        console.log(JSON.parse(xhttp.responseText));
+                        wishList = JSON.parse(xhttp.responseText);
+                        callback(wishList);
                     }
                 }
 
-                xhttp.open("GET", "http://fa19server.appspot.com/api/wishlists/myWishList?access_token="+accessToken);
+                xhttp.open("GET", "http://fa19server.appspot.com/api/wishlists/myWishList?access_token="+accessTok);
                 xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                 xhttp.send();
             }
@@ -114,15 +161,16 @@
                 let newAddImage    = "TODO";
                 let newAddComment  = encodeURIComponent(DOMPurify.sanitize(addComment.value));
 
-                let data = 'item='      + newAddName + 
-                           '&price='    + newAddPrice + 
+                let data = 'item='      + newAddName +
+                           '&price='    + newAddPrice +
                            '&category=' + newAddCategory +
                            '&image='    + newAddImage    +
                            '&comment='  + newAddComment;
-                
+
                 xhttp.onreadystatechange = function(){
                     if(this.readyState == 4){
                         console.log(xhttp.responseText);
+                        getWishList(loadHomepage);
                     }
                 };
                 xhttp.open("POST", "http://fa19server.appspot.com/api/wishlists?access_token=" + accessTok, true);
