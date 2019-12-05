@@ -3,24 +3,82 @@
     <head>
         <meta charset="UTF-8">
         <title>X-Mas List</title>
+        <script src="./dist/purify.js"></script>
     </head>
     <body onload="loadHomepage()">
-        <h1>Welcome, User!</h1>
+        <h1 id="welcome">Welcome, &nbsp;</h1>
         <nav>
             <div>
 
             </div>
             <div>
-                <input type="button" value="Add Item"></input>
+                <input type="button" value="Add Item" id="openAdd"></input>
                 <button onclick="handleLogOut()">Log Out</button>
             </div>
         </nav>
+
+        <dialog id="addModal">
+            <label>Item:</label>
+            <input type="text" id="addName">
+            <br>
+            <br>
+            <label>Price:</label>
+            <input type="number" step="0.01" value="0.00" id="addPrice">
+            <br>
+            <br>
+            <label>Category:</label>
+            <input type="text" id="addCategory">
+            <br>
+            <br>
+            <label>Image:</label>
+            <input type="file" id="addPic" accept="image/png, image/jpeg">
+            <br>
+            <br>
+            <label>Comment:</label>
+            <input type="text" id="addComment">
+            <br>
+            <input type="button" id="closeAdd" value="Cancel"></input>
+            <input type="button" id="saveNewItem" value="Save" ></input>
+        </dialog>
+
+
+
         <script>
+            let accessTok;
+            let userName;
+
+            let addModal    = document.getElementById("addModal");
+            let openAdd     = document.getElementById("openAdd");
+            let closeAdd    = document.getElementById("closeAdd");
+            let saveNewItem = document.getElementById("saveNewItem");
+
+            let addName     = document.getElementById("addName");
+            let addPrice    = document.getElementById("addPrice");
+            let addCategory = document.getElementById("addCategory");
+            let addPic      = document.getElementById("addPic");
+            let addComment  = document.getElementById("addComment");
+
             function loadHomepage(){
-                let tok = localStorage.getItem("sessTok");
-                if(tok === 'null'){
+                accessTok = localStorage.getItem("sessTok");
+                userName = localStorage.getItem("userName");
+                if(accessTok === 'null'){
                     location.replace('login.html');
                 }
+                document.getElementById("welcome").innerHTML += userName + "!";
+                //getWishList("TrxHfT9VQXCh4IKy8MOTz1f7Oj8qbK6uYnLGAJLM02zxCf2lJcCJIWP5RNzE78QB");
+            }
+
+            function getWishList(accessToken){
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function(){
+                    if(this.readyState == 4){
+                        console.log(JSON.parse(xhttp.responseText));
+                    }
+                }
+
+                xhttp.open("GET", "http://fa19server.appspot.com/api/wishlists/myWishList?access_token="+accessToken);
+                xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhttp.send();
             }
 
             function handleLogOut(){
@@ -30,6 +88,7 @@
                 xhttp.onreadystatechange = function(){
                     if(this.readyState == 4 && this.status == 204){
                         localStorage.setItem("sessTok", null);
+                        localStorage.setItem("userName", null);
                         location.replace('login.html');
                     }
                 };
@@ -37,6 +96,45 @@
                 xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                 xhttp.send();
             }
+
+            openAdd.addEventListener('click', ()=> {
+                addModal.showModal();
+            });
+
+            closeAdd.addEventListener('click', ()=> {
+                addModal.close();
+            });
+
+            saveNewItem.addEventListener('click', ()=> {
+                var xhttp = new XMLHttpRequest();
+
+                let newAddName     = encodeURIComponent(DOMPurify.sanitize(addName.value));
+                let newAddPrice    = addPrice.value;
+                let newAddCategory = encodeURIComponent(DOMPurify.sanitize(addCategory.value));
+                let newAddImage    = "TODO";
+                let newAddComment  = encodeURIComponent(DOMPurify.sanitize(addComment.value));
+
+                let data = 'item='      + newAddName + 
+                           '&price='    + newAddPrice + 
+                           '&category=' + newAddCategory +
+                           '&image='    + newAddImage    +
+                           '&comment='  + newAddComment;
+                
+                xhttp.onreadystatechange = function(){
+                    if(this.readyState == 4){
+                        console.log(xhttp.responseText);
+                    }
+                };
+                xhttp.open("POST", "http://fa19server.appspot.com/api/wishlists?access_token=" + accessTok, true);
+                xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhttp.send(data);
+
+                addModal.close();
+            });
+
+
+
+
         </script>
     </body>
 </html>

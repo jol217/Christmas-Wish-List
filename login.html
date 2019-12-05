@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Login</title>
+        
     </head>
     <body>
         <h1>Login</h1>
@@ -36,6 +37,7 @@
                         console.log(xhttp.responseText);
                         let sessTok = JSON.parse(xhttp.responseText);
                         localStorage.setItem("sessTok", sessTok.id);
+                        localStorage.setItem("userName", nameStr);
                         location.replace('index.html');
                     }
                 };
