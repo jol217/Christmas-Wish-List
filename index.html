@@ -57,6 +57,7 @@
         <section>
           <ul id='wList'></ul>
         </section>
+        <!-- <img src="https://upload.wikimedia.org/wikipedia/commons/1/13/Benedict_Cumberbatch_2011.png" alt="Yellow bouquet" /> -->
 
         <dialog id="addModal">
             <label>Item:</label>
@@ -72,7 +73,7 @@
             <br>
             <br>
             <label>Image:</label>
-            <input type="file" id="addPic" accept="image/gif, image/png, image/jpeg">
+            <input type="text" id="addPic">
             <br>
             <br>
             <label>Comment:</label>
@@ -96,7 +97,7 @@
             <br>
             <br>
             <label>Image:</label>
-            <input type="file" id="editPic" accept="image/gif, image/png, image/jpeg">
+            <input type="text" id="editPic">
             <br>
             <br>
             <label>Comment:</label>
@@ -117,6 +118,8 @@
             let accessTok;
             let userName = localStorage.getItem("userName");
             document.getElementById("welcome").innerHTML += userName + "!";
+
+
 
 
 
@@ -160,15 +163,28 @@
               //let itemPic = document.createElement("IMG");
               //itemPic.src = URL.createObjectURL(item.pic);
             //  li.appendChild(itemPic);
-              li.appendChild(document.createTextNode(item.item));
-              li.appendChild(document.createElement("br"));
-              li.appendChild(document.createTextNode(item.price));
-              li.appendChild(document.createElement("br"));
-              li.appendChild(document.createTextNode(item.category));
-              li.appendChild(document.createElement("br"));
-              li.appendChild(document.createTextNode(item.image));
-              li.appendChild(document.createElement("br"));
-              li.appendChild(document.createTextNode(item.comment));
+              toDataURL(item.image, function(dataUrl) {
+                  console.log('Result in string:', dataUrl);
+                  var image = new Image();
+                  image.src = dataUrl;
+                  image.style.width = '200px'
+                  image.style.height = '200px'
+                  li.appendChild(image);
+                  li.appendChild(document.createElement("br"));
+                  li.appendChild(document.createTextNode(item.item));
+                  li.appendChild(document.createElement("br"));
+                  li.appendChild(document.createTextNode(item.price));
+                  li.appendChild(document.createElement("br"));
+                  li.appendChild(document.createTextNode(item.category));
+                  li.appendChild(document.createElement("br"));
+                  // li.appendChild(document.createTextNode(item.image));
+                  // li.appendChild(document.createElement("br"));
+                  li.appendChild(document.createTextNode(item.comment));
+                  li.appendChild(document.createElement("br"));
+
+              });
+
+
               return li;
             }
 
@@ -203,7 +219,7 @@
                       let eName  = encodeURIComponent(DOMPurify.sanitize(editName.value));
                       let ePrice = editPrice.value;
                       let eCategory = encodeURIComponent(DOMPurify.sanitize(editCategory.value));
-                      let ePic   = "TODO";
+                      let ePic   = encodeURIComponent(editPic.value);
                       let eComment = encodeURIComponent(DOMPurify.sanitize(editComment.value));
 
                       let data = "item=" + eName + "&price=" + ePrice + "&category=" + eCategory + "&image=" + ePic + "&comment=" + eComment;
@@ -222,7 +238,7 @@
                   editName.value = item.item;
                   editPrice.value = item.price;
                   editCategory.value = item.category;
-                  //editPic.value = item.image;
+                  editPic.value = item.image;
                   editComment.value = item.comment;
                   editModal.removeChild(editModal.lastChild);
                   editModal.appendChild(confirmEdit);
@@ -269,9 +285,21 @@
                 // addListener("r"+ item.id);
                 //
                 // li.appendChild(starRating);
-                li.appendChild(deleteBtn);
-                li.appendChild(editBtn);
+
+
+                setTimeout(function(){
+                  li.appendChild(deleteBtn);
+                  li.appendChild(editBtn);
+                }, 300);
+
+
+
+
+
+
+
                 ul.appendChild(li);
+                ul.appendChild(document.createElement("br"));
               }
             }
 
@@ -327,7 +355,7 @@
                 let newAddName     = encodeURIComponent(DOMPurify.sanitize(addName.value));
                 let newAddPrice    = addPrice.value;
                 let newAddCategory = encodeURIComponent(DOMPurify.sanitize(addCategory.value));
-                let newAddImage    = "TODO";
+                let newAddImage    = encodeURIComponent(addPic.value);
                 let newAddComment  = encodeURIComponent(DOMPurify.sanitize(addComment.value));
 
                 let data = 'item='      + newAddName +
@@ -347,6 +375,12 @@
                 xhttp.send(data);
 
                 addModal.close();
+
+                addName.value     = "";
+                addPrice.value    = 0;
+                addCategory.value = "";
+                addPic.value      = "";
+                addComment.value  = "";
             });
 
             cancelDelete.addEventListener('click', ()=> {
@@ -404,6 +438,21 @@
           //       });
           //   }
           // }
+
+          function toDataURL(url, callback) {
+           var httpRequest = new XMLHttpRequest();
+           httpRequest.onload = function() {
+              var fileReader = new FileReader();
+                 fileReader.onloadend = function() {
+                    callback(fileReader.result);
+                 }
+                 fileReader.readAsDataURL(httpRequest.response);
+           };
+           httpRequest.open('GET', url);
+           httpRequest.responseType = 'blob';
+           httpRequest.send();
+        }
+
 
 
 
