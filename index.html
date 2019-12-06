@@ -4,18 +4,56 @@
         <meta charset="UTF-8">
         <title>X-Mas List</title>
         <script src="./dist/purify.js"></script>
+
+        <!-- <style>
+            .starRating:not(old){
+              display        : inline-block;
+              width          : 7.5em;
+              height         : 1.5em;
+              overflow       : hidden;
+              vertical-align : bottom;
+            }
+            .starRating:not(old) > input{
+              margin-right : -100%;
+              opacity      : 0;
+            }
+            .starRating:not(old) > label{
+              display         : block;
+              float           : right;
+              position        : relative;
+              background      : url('star-off.svg');
+              background-size : contain;
+            }
+            .starRating:not(old) > label:before{
+              content         : '';
+              display         : block;
+              width           : 1.5em;
+              height          : 1.5em;
+              background      : url('star-on.svg');
+              background-size : contain;
+              opacity         : 0;
+              transition      : opacity 0.2s linear;
+            }
+            .starRating:not(old) > label:hover:before,
+            .starRating:not(old) > label:hover ~ label:before,
+            .starRating:not(:hover) > :checked ~ label:before{
+              opacity : 1;
+            }
+        </style> -->
     </head>
+
     <body onload="getWishList(loadHomepage)">
-        <h1 id="welcome">Welcome, &nbsp;</h1>
+
         <nav>
             <div>
-
+              <h1 id="welcome">Welcome, &nbsp;</h1>
             </div>
             <div>
                 <input type="button" value="Add Item" id="openAdd"></input>
                 <button onclick="handleLogOut()">Log Out</button>
             </div>
         </nav>
+
         <section>
           <ul id='wList'></ul>
         </section>
@@ -34,14 +72,43 @@
             <br>
             <br>
             <label>Image:</label>
-            <input type="file" id="addPic" accept="image/png, image/jpeg">
+            <input type="file" id="addPic" accept="image/gif, image/png, image/jpeg">
             <br>
             <br>
             <label>Comment:</label>
             <input type="text" id="addComment">
             <br>
-            <input type="button" id="closeAdd" value="Cancel"></input>
+            <input type="button" id="cancelAdd" value="Cancel"></input>
             <input type="button" id="saveNewItem" value="Save" ></input>
+        </dialog>
+
+        <dialog id="editModal">
+            <label>Item:</label>
+            <input type="text" id="editName">
+            <br>
+            <br>
+            <label>Price:</label>
+            <input type="number" step="0.01" value="0.00" id="editPrice">
+            <br>
+            <br>
+            <label>Category:</label>
+            <input type="text" id="editCategory">
+            <br>
+            <br>
+            <label>Image:</label>
+            <input type="file" id="editPic" accept="image/gif, image/png, image/jpeg">
+            <br>
+            <br>
+            <label>Comment:</label>
+            <input type="text" id="editComment">
+            <br>
+            <input type="button" id="cancelEdit" value="Cancel"></input>
+        </dialog>
+
+        <dialog id="deleteModal">
+          <p>Delete movie?</p>
+          <br/>
+          <input type="button" id="cancelDelete" value="Cancel"></input>
         </dialog>
 
 
@@ -52,16 +119,31 @@
             document.getElementById("welcome").innerHTML += userName + "!";
 
 
+
+
             let addModal    = document.getElementById("addModal");
             let openAdd     = document.getElementById("openAdd");
-            let closeAdd    = document.getElementById("closeAdd");
+            let cancelAdd   = document.getElementById("cancelAdd");
             let saveNewItem = document.getElementById("saveNewItem");
+
+            let editModal    = document.getElementById("editModal");
+            let editName     = document.getElementById("editName");
+            let editPrice    = document.getElementById("editPrice");
+            let editCategory = document.getElementById("editCategory");
+            let editPic      = document.getElementById("editPic");
+            let editComment  = document.getElementById("editComment");
+            let cancelEdit   = document.getElementById("cancelEdit");
+
+            let deleteModal = document.getElementById("deleteModal");
+            let cancelDelete = document.getElementById("cancelDelete");
 
             let addName     = document.getElementById("addName");
             let addPrice    = document.getElementById("addPrice");
             let addCategory = document.getElementById("addCategory");
             let addPic      = document.getElementById("addPic");
             let addComment  = document.getElementById("addComment");
+
+
 
 
 
@@ -75,6 +157,9 @@
 
             function makeLi(item){
               let li = document.createElement("li");
+              //let itemPic = document.createElement("IMG");
+              //itemPic.src = URL.createObjectURL(item.pic);
+            //  li.appendChild(itemPic);
               li.appendChild(document.createTextNode(item.item));
               li.appendChild(document.createElement("br"));
               li.appendChild(document.createTextNode(item.price));
@@ -100,8 +185,92 @@
 
                 // Create & append edite
 
-                // Create & append delete
+                let editBtn = document.createElement("input");
+                editBtn.type = "button";
+                editBtn.value = "edit"
+                editBtn.id = "e" + item.id;
 
+                editBtn.addEventListener('click', function(){
+                  let confirmEdit = document.createElement("input");
+                  confirmEdit.type = "button";
+                  confirmEdit.value = "Save changes";
+                  confirmEdit.id = this.id;
+
+                  confirmEdit.addEventListener('click', function(){
+                      let itemId = this.id.substring(1);
+                      var xhttp = new XMLHttpRequest();
+
+                      let eName  = encodeURIComponent(DOMPurify.sanitize(editName.value));
+                      let ePrice = editPrice.value;
+                      let eCategory = encodeURIComponent(DOMPurify.sanitize(editCategory.value));
+                      let ePic   = "TODO";
+                      let eComment = encodeURIComponent(DOMPurify.sanitize(editComment.value));
+
+                      let data = "item=" + eName + "&price=" + ePrice + "&category=" + eCategory + "&image=" + ePic + "&comment=" + eComment;
+
+                      xhttp.onreadystatechange = function(){
+                        if(this.readyState == 4){
+                          console.log(xhttp.responseText);
+                          editModal.close();
+                          getWishList(loadHomepage);
+                        }
+                      }
+                      xhttp.open("POST", "http://fa19server.appspot.com/api/wishlists/" + itemId + "/replace?access_token=" + accessTok);
+                      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                      xhttp.send(data);
+                  });
+                  editName.value = item.item;
+                  editPrice.value = item.price;
+                  editCategory.value = item.category;
+                  //editPic.value = item.image;
+                  editComment.value = item.comment;
+                  editModal.removeChild(editModal.lastChild);
+                  editModal.appendChild(confirmEdit);
+                  editModal.showModal();
+                });
+
+
+                let deleteBtn = document.createElement("input");
+                deleteBtn.type = "button";
+                deleteBtn.value = "delete";
+                deleteBtn.id = "d" + item.id;
+
+                deleteBtn.addEventListener('click', function(){
+                  let confirmDelete = document.createElement("input");
+                  confirmDelete.type = "button";
+                  confirmDelete.value = "Ok";
+                  confirmDelete.id = this.id;
+
+                  confirmDelete.addEventListener('click', function(){
+                      let itemId = this.id.substring(1);
+                      var xhttp = new XMLHttpRequest();
+
+                      xhttp.onreadystatechange = function(){
+                          if(this.readyState == 4){
+                              console.log(xhttp.responseText);
+                              deleteModal.close();
+                              getWishList(loadHomepage);
+                          }
+                      };
+
+                      xhttp.open("DELETE", "http://fa19server.appspot.com/api/wishlists/" + itemId + "?access_token=" + accessTok, true);
+                      xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                      xhttp.send();
+
+                  });
+
+                  deleteModal.removeChild(deleteModal.lastChild);
+                  deleteModal.appendChild(confirmDelete);
+                  deleteModal.showModal();
+                });
+
+                // let starRating = makeRating(item.id);
+                //
+                // addListener("r"+ item.id);
+                //
+                // li.appendChild(starRating);
+                li.appendChild(deleteBtn);
+                li.appendChild(editBtn);
                 ul.appendChild(li);
               }
             }
@@ -148,7 +317,7 @@
                 addModal.showModal();
             });
 
-            closeAdd.addEventListener('click', ()=> {
+            cancelAdd.addEventListener('click', ()=> {
                 addModal.close();
             });
 
@@ -179,6 +348,63 @@
 
                 addModal.close();
             });
+
+            cancelDelete.addEventListener('click', ()=> {
+                deleteModal.close();
+            });
+
+            cancelEdit.addEventListener('click', ()=>{
+                editModal.close();
+            });
+
+
+
+          // function makeRating(itemId){
+          //   let span = document.createElement("span");
+          //   span.id = 'rating'+itemId;
+          //   span.className = 'starRating';
+          //
+          //   for ( let i = 5; i > 0; i--){
+          //     let input = document.createElement("input");
+          //     input.id = "rating" + i;
+          //     input.type = "radio";
+          //     input.name = "r" + itemId;
+          //     input.value = i.toString();
+          //
+          //     let label =document.createElement("label");
+          //     label.for = "rating"+ i;
+          //     label.innerHTML = i;
+          //
+          //
+          //     console.log(input.id);
+          //     console.log(input.name);
+          //
+          //
+          //     span.appendChild(input);
+          //     span.appendChild(label);
+          //   }
+          //   console.log(span.id);
+          //   console.log(span.class);
+          //
+          //   return span;
+          // }
+          //
+          // function addListener(ratingName){
+          //   var ele = document.getElementsByName(ratingName);
+          //   var prev = null;
+          //   for (var i = 0; i < ele.length; i++) {
+          //       ele[i].addEventListener('change', function() {
+          //           //(prev) ? console.log(prev.value): null;
+          //           if (this !== prev) {
+          //               prev = this;
+          //           }
+          //           console.log(ratingName);
+          //           console.log(this.value);
+          //
+          //       });
+          //   }
+          // }
+
 
 
 
