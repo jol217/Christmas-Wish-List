@@ -15,10 +15,7 @@
               color: orange;
             }
     		</style>
-
-
     </head>
-
     <body onload="getWishList(loadHomepage)">
         <div class="progress-bar" id="progress-bar">
           <div class="progress" id="progress"></div>
@@ -38,7 +35,6 @@
         <section>
           <ul id='wList'></ul>
         </section>
-        <!-- <img src="https://upload.wikimedia.org/wikipedia/commons/1/13/Benedict_Cumberbatch_2011.png" alt="Yellow bouquet" /> -->
 
         <dialog id="addModal">
             <label>Item:</label>
@@ -431,6 +427,10 @@
             });
 
             saveNewItem.addEventListener('click', ()=> {
+                if(addName.value == "" || addCategory.value == "" || addComment.value == "" || addPic.value == ""){
+                  alert("Ensure all fields are filled. Try again.");
+                  return;
+                }
                 let xhttp = new XMLHttpRequest();
                 var formData = new FormData();
                 xhttp.open("POST", CLOUDINARY_URL, true);
