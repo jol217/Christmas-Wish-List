@@ -3,75 +3,43 @@
     <head>
         <meta charset="UTF-8">
         <title>Sign Up</title>
+        <link href="./style/loginAndSignup.css" type="text/css" rel="stylesheet">
     </head>
     <body>
-        <h1>Sign Up</h1>
-      
-            <label>Username:</label>
-            <input type="text" name="username" id="uName"></input><br>
-            <label>Email:</label>
-            <input type="email" name="email" id="uEmail"></input><br>
-            <label>Password:</label>
-            <input type="password" name="password" id="uPassword"></input><br>
-            <label>Re-enter Password:</label>
-            <input type="password" id="uConfirmPassword"></input><br>
-            <button onclick="handleSignUp()">Sign Up</button>
-      
-      <script>
-            let uName = document.getElementById("uName");
-            let uEmail = document.getElementById("uEmail");
-            let uPassword = document.getElementById("uPassword");
-            let uConfirmPassword = document.getElementById("uConfirmPassword");
+        <!-- <h1>Sign Up</h1>
 
-            function handleSignUp(){
-                if(uName.value == "" || uEmail.value == "" || uPassword.value == "" || uConfirmPassword == ""){
-                    alert("Ensure all fields are filled. Try again.");
-                    return;
-                }
-                else if(uPassword.value != uConfirmPassword.value){
-                    alert("Password you entered does not match. Please try again.");
-                    return;
-                }
-                let name = encodeURIComponent(uName.value);
-                let email = encodeURIComponent(uEmail.value);
-                let password = encodeURIComponent(uPassword.value);
-                let data = 'username=' + name + '&email=' + email + '&password=' + password;
+        <label>Username:</label>
+        <input type="text" name="username" id="uName"></input><br>
+        <label>Email:</label>
+        <input type="email" name="email" id="uEmail"></input><br>
+        <label>Password:</label>
+        <input type="password" name="password" id="uPassword"></input><br>
+        <label>Re-enter Password:</label>
+        <input type="password" id="uConfirmPassword"></input><br>
+        <button onclick="handleSignUp()">Sign Up</button> -->
 
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function(){
-                    if(this.readyState == 4){
-                        console.log(xhttp.responseText);
-                        if(this.status == 200){
-                            alert("Sign up successful. Redirecting to login page.");
-                            location.replace('login.html');
-                        }
-                        else{
-                            let errormsg = "";
-                            let response = JSON.parse(xhttp.responseText);
-                            let error = response.error.details.messages;
-                            for(let key in error){
-                                if(error.hasOwnProperty(key)){
-                                    if(key == "username"){
-                                        errormsg += error[key] + "\n";
-                                    }
-                                    if(key == "email"){
-                                        if(error[key] == "is invalid"){
-                                            errormsg += "Email is invalid \n";
-                                        }
-                                        else{
-                                            errormsg += error[key] + "\n";
-                                        }
-                                    }
-                                }
-                            }
-                            alert(errormsg);
-                        }
-                    }
-                };
-                xhttp.open("POST", "http://fa19server.appspot.com/api/Users", true);
-                xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-                xhttp.send(data);
-            }
-        </script>
+        <div id="id01" class="modal">
+            <div class="modal-content animate">
+              <noscript>Enable JavaScript!</noscript>
+              <div class="imgcontainer">
+                <img src="./media/santa2.gif" alt="Avatar" class="avatar">
+              </div>
+              <div class="container">
+                <h2><b>Sign up</b></h2>
+                <label for="uname"><b>Username</b></label>
+                <input id="uName" type="text" placeholder="Enter Username" name="uname" required>
+                <label for="eml"><b>Email</b></label>
+                <input id="uEmail" type="text" placeholder="Enter Email" name="eml" required>
+                <label for="psw"><b>Password</b></label>
+                <input id="uPassword" type="password" placeholder="Enter Password" name="psw" required>
+                <input id="uConfirmPassword" type="password" placeholder="Re-enter Password" name="cpsw" required>
+                <button onclick="handleSignUp()">Sign Up</button>
+                <p>Already have an account? <a href="login.html">Log in</a></p>
+            </div>
+          </div>
+        </div>
+
+
+        <script src="./scripts/signup.js"></script>
     </body>
 </html>
