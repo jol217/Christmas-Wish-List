@@ -3,69 +3,29 @@
     <head>
         <meta charset="UTF-8">
         <title>Login</title>
-        
+        <link href="./style/loginAndSignup.css" type="text/css" rel="stylesheet">
+
     </head>
     <body>
-        <h1>Login</h1>
-        <label>Username:</label>
-        <input type="text" name="username" id="uName"></input><br>
-        <label>Password:</label>
-        <input type="password" name="password" id="uPassword"></input><br>
-        <button onclick="handleLogin()">Login</button><br>
-        <p>Don't have an account? 
-            <a href="signup.html">Sign Up</a>
-        </p> 
 
-        <script>
-            let uName = document.getElementById('uName');
-            let uPassword = document.getElementById('uPassword');
+      <div id="id01" class="modal">
 
-            function handleLogin(){
-                let nameStr = uName.value;
-                let name = encodeURIComponent(uName.value);
-                let password = encodeURIComponent(uPassword.value);
-                let data;
-                if(!nameStr.includes('@')){
-                    data = 'username=' + name + '&password=' + password;
-                }
-                else{
-                    data = 'email=' + name + '&password=' + password;
-                }
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function(){
-                    if(this.readyState == 4){
-                        console.log(xhttp.responseText);
-                        if(this.status == 200){
-                            alert("Login successful. Redirecting to homepage.");
-                            let sessTok = JSON.parse(xhttp.responseText);
-                            localStorage.setItem("sessTok", sessTok.id);
-                            localStorage.setItem("userName", nameStr);
-                            location.replace('index.html');
-                        }
-                        else if(this.status == 400){
-                            if(uName.value == "" && uPassword.value == ""){
-                                alert("Enter a valid username and password.");
-                            }
-                            else{
-                                alert("Enter a valid username.");
-                            }
-                        }
-                        else{
-                            if(uPassword.value == ""){
-                                alert("Enter a valid password.");
-                            }
-                            else{
-                                alert("Check username and password and try again.");
-                            }
-                        }
-                    }
-                };
-                xhttp.open("POST", "http://fa19server.appspot.com/api/Users/login", true);
-                xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-                xhttp.send(data);
-                //location.replace('login.html');
-            }
-
-        </script>
+          <div class="modal-content animate">
+            <noscript>Enable JavaScript!</noscript>
+            <div class="imgcontainer">
+              <img src="./media/santa.gif" alt="Avatar" class="avatar">
+            </div>
+            <div class="container">
+              <h2><b>Sign in</b></h2>
+              <label for="uname"><b>Username</b></label>
+              <input id="uName" type="text" placeholder="Enter Username" name="uname" required>
+              <label for="psw"><b>Password</b></label>
+              <input id="uPassword" type="password" placeholder="Enter Password" name="psw" required>
+              <button onclick="handleLogin()">Login</button>
+            <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+          </div>
+        </div>
+      </div>
+      <script src="./scripts/login.js"></script>
     </body>
 </html>
